@@ -17,6 +17,7 @@ You may compile it by yourself or download and install prebuild binary.
     cd ffmpeg
     git checkout n4.4.1
     python ../build-script/make_compile.py 
+    python ../build-script/make_dylib_relative.py
     python ../build-script/make_universal.py
     python ../build-script/package.py --tag n4.4.1
     ```
