@@ -11,15 +11,16 @@ def execute(command):
 
 library_list = ["libavcodec", "libavdevice", "libavfilter", "libavformat", "libavutil", "libswresample", "libswscale", "libvpx", "libvorbis", "libvorbisenc", "libvorbisfile", "libogg"]
 def change_dylib_path(file_path):
-
-    execute(f"install_name_tool -id {os.path.join('@rpath',os.path.basename(file_path))} {file_path} ")
     with os.popen(f"otool -L {file_path}") as p:
         query_out = p.readlines()
     for line in query_out:
         line = line.strip().split(" ")[0]
-
-        if os.path.basename(line).split('.')[0] in library_list:
-            execute(f"install_name_tool -change {line} {os.path.join('@rpath', os.path.basename(line))} {file_path}")
+        library_name = os.path.basename(line).split('.')[0]
+        if library_name in library_list:
+            if library_name == os.path.basename(file_path).split('.')[0]:
+                execute(f"install_name_tool -id {os.path.join('@rpath', os.path.basename(line))} {file_path}")
+            else:
+                execute(f"install_name_tool -change {line} {os.path.join('@rpath', os.path.basename(line))} {file_path}")
     execute(f"otool -L {file_path}")
 
 def create_universal_binary(x86_path, arm_path, universal_path):
